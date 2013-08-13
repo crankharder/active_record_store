@@ -1,33 +1,40 @@
 class ArStore < ActiveRecord::Base
 
+  def write!(key, val)
+    self.key   = key
+    self.value = Marshal.dump(val)
+    self.save!
+    val
+  end
+
   def self.read(key)
-    get(key).try(:value)
+    r = get(key).try(:value)
+    r ? Marshal.load(r) : nil
   end
 
   def self.write(key, value = nil, &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
 
-    (value || yield).tap do |val|
-      (get(key) || new).tap do |obj|
-        obj.key   = key
-        obj.value = val
-        obj.save!
-      end
-    end
+    (get(key) || new).write!(key, value || yield)
   end
 
   def self.fetch(key, value = nil, &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    read(key) || write(key, value, &blk)
+    read(key) || new.write!(key, value || yield)
   end
 
   def self.clean
-    where(["updated_at < ?", EXPIRATION.ago]).delete_all
+    where(expired_arel).delete_all
+  end
+
+  def self.expired_arel
+    arel_table[:updated_at].lt(EXPIRATION.ago)
   end
 
 private
 
   def self.get(key)
+    where(expired_arel.not).
     where(key: key).first
   end
 end
