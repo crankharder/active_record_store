@@ -2,8 +2,8 @@ class CreateArStores < ActiveRecord::Migration
 
   def change
     create_table :ar_stores do |t|
-      t.text :key, null: false
-      t.text :value, null: false
+      t.binary :key, null: false
+      t.binary :value, null: false
 
       t.index :key
 
