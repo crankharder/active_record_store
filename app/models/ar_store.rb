@@ -14,7 +14,6 @@ class ArStore < ActiveRecord::Base
 
   def self.write(key, value = nil, &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-
     (get(key) || new).write!(key, value || yield)
   end
 
@@ -28,13 +27,13 @@ class ArStore < ActiveRecord::Base
   end
 
   def self.expired_arel
-    arel_table[:updated_at].lt(EXPIRATION.ago)
+    # arel_table[:updated_at].lt(EXPIRATION.ago)
   end
 
 private
 
   def self.get(key)
-    where(expired_arel.not).
+    # where(expired_arel.not).
     where(key: key).first
   end
 end
