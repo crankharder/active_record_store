@@ -1,5 +1,13 @@
 class ArStore < ActiveRecord::Base
 
+  def self.expiration=(seconds)
+    @expiration ||= sections
+  end
+
+  def self.expiration
+    @expiration ||= 1.day
+  end
+
   def write!(key, val)
     self.key   = key
     self.value = Marshal.dump(val)
@@ -27,13 +35,12 @@ class ArStore < ActiveRecord::Base
   end
 
   def self.expired_arel
-    # arel_table[:updated_at].lt(EXPIRATION.ago)
+    arel_table[:updated_at].lt(expiration.ago)
   end
 
 private
 
   def self.get(key)
-    # where(expired_arel.not).
     where(key: key).first
   end
 end
