@@ -23,12 +23,12 @@ class ArStore < ActiveRecord::Base
 
   def self.write(key, value = nil, options = {},  &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    (get(key) || new).write!(key, value, options[:expires] || yield)
+    (get(key) || new).write!(key, (value || yield), options[:expires])
   end
 
   def self.fetch(key, value = nil, options = {}, &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    read(key) || new.write!(key, value, options[:expires] || yield)
+    read(key) || new.write!(key, (value || yield), options[:expires])
   end
 
   def self.clean
