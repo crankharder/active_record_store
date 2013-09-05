@@ -32,13 +32,11 @@ class ArStore < ActiveRecord::Base
   end
 
   def self.clean
-    where(expired_arel).delete_all
+    where(expired_conditions).delete_all
   end
 
-  def self.expired_arel
-    arel_table[:expires].eq(true).and(
-      arel_table[:updated_at].lt(expiration.ago)
-    )
+  def self.expired_conditions
+    "now() > (updated_at + (expires * '1 second'::interval))"
   end
 
 private

@@ -1,7 +1,8 @@
-class AddIndices < ActiveRecord::Migration
+class ChangeExpires < ActiveRecord::Migration
 
   def change
-    change_column :ar_stores, :expires, :integer
+    remove_column :ar_stores, :expires
+    add_column :ar_stores, :expires, :integer
   end
 end
 
