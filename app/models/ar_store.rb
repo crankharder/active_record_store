@@ -36,8 +36,9 @@ class ArStore < ActiveRecord::Base
   end
 
   def self.expired_arel
-    arel_table[:expires].eq(true).and
-    arel_table[:updated_at].lt(expiration.ago)
+    arel_table[:expires].eq(true).and(
+      arel_table[:updated_at].lt(expiration.ago)
+    )
   end
 
 private
