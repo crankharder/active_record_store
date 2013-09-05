@@ -8,7 +8,7 @@ class ArStore < ActiveRecord::Base
     @expiration ||= 1.day
   end
 
-  def write!(key, val, expires = false)
+  def write!(key, val, expires = nil)
     self.key     = key
     self.value   = Marshal.dump(val)
     self.expires = expires
