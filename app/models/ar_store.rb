@@ -8,9 +8,10 @@ class ArStore < ActiveRecord::Base
     @expiration ||= 1.day
   end
 
-  def write!(key, val)
-    self.key   = key
-    self.value = Marshal.dump(val)
+  def write!(key, val, expires = false)
+    self.key     = key
+    self.value   = Marshal.dump(val)
+    self.expires = expires
     self.save!
     val
   end
@@ -20,14 +21,14 @@ class ArStore < ActiveRecord::Base
     r ? Marshal.load(r) : nil
   end
 
-  def self.write(key, value = nil, &blk)
+  def self.write(key, value = nil, options = {},  &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    (get(key) || new).write!(key, value || yield)
+    (get(key) || new).write!(key, value, options[:expires] || yield)
   end
 
-  def self.fetch(key, value = nil, &blk)
+  def self.fetch(key, value = nil, options = {}, &blk)
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    read(key) || new.write!(key, value || yield)
+    read(key) || new.write!(key, value, options[:expires] || yield)
   end
 
   def self.clean
@@ -35,6 +36,7 @@ class ArStore < ActiveRecord::Base
   end
 
   def self.expired_arel
+    arel_table[:expires].eq(true).and
     arel_table[:updated_at].lt(expiration.ago)
   end
 
