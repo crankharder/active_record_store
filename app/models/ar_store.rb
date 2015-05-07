@@ -1,4 +1,5 @@
 class ArStore < ActiveRecord::Base
+  VALID_OPTION_KEYS = [:expires_in]
 
   def self.expiration=(seconds)
     @expiration ||= sections
@@ -21,12 +22,20 @@ class ArStore < ActiveRecord::Base
     r ? Marshal.load(r) : nil
   end
 
+  def self.invalid_options(opts)
+    opts.keys - VALID_OPTION_KEYS
+  end
+
   def self.write(key, value = nil, options = {},  &blk)
+    options.symbolize_keys!
+    raise ArgumentError "expires_in is the only valid option" if invalid_options(options).present?
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
     (get(key) || new).write!(key, (value || yield), options[:expires_in])
   end
 
   def self.fetch(key, value = nil, options = {}, &blk)
+    options.symbolize_keys!
+    raise ArgumentError "expires_in is the only valid option" if invalid_options(options).present?
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
     read(key) || new.write!(key, (value || yield), options[:expires_in])
   end
