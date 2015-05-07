@@ -30,14 +30,14 @@ class ArStore < ActiveRecord::Base
     options.symbolize_keys!
     raise ArgumentError "expires_in is the only valid option" if invalid_options(options).present?
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    (get(key) || new).write!(key, (value || yield), options[:expires_in])
+    (get(key) || new).write!(key, (value.nil? ? yield : value), options[:expires_in])
   end
 
   def self.fetch(key, value = nil, options = {}, &blk)
     options.symbolize_keys!
     raise ArgumentError "expires_in is the only valid option" if invalid_options(options).present?
     raise ArgumentError, "Pass value or a block, not both" if value && block_given?
-    read(key) || new.write!(key, (value || yield), options[:expires_in])
+    read(key) || new.write!(key, (value.nil? ? yield : value), options[:expires_in])
   end
 
   def self.clean
