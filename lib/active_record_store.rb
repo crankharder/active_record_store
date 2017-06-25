@@ -1,7 +1,6 @@
 require "active_record_store/version"
+require "active_record_store/engine"
 
 module ActiveRecordStore
-  class Engine < Rails::Engine
-  end
 end
 
