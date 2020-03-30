@@ -1,4 +1,4 @@
-class AddIndices < ActiveRecord::Migration
+class AddIndices < ActiveRecord::Migration[6.0]
 
   def change
     add_index :ar_stores, :updated_at

@@ -1,4 +1,4 @@
-class ChangeExpires < ActiveRecord::Migration
+class ChangeExpires < ActiveRecord::Migration[6.0]
 
   def change
     remove_column :ar_stores, :expires

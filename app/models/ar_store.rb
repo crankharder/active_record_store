@@ -1,4 +1,4 @@
-class ArStore < ActiveRecord::Base
+class ArStore < ApplicationRecord
   VALID_OPTION_KEYS = [:expires_in]
 
   def self.expiration=(seconds)
